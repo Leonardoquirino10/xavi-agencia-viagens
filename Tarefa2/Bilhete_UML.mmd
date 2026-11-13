@@ -1,0 +1,22 @@
+classDiagram
+    direction LR
+    class Bilhete {
+        -String idBilhete
+        -List~Voo~ voos
+        -Cliente cliente
+        -LocalDate dataEmissao
+        +Bilhete(cliente: Cliente)
+        +adicionarVoo(voo: Voo) boolean
+        +calcularPrecoFinal() double
+        +getOrigemInicial() Cidade
+        +getDestinoFinal() Cidade
+        -validarSequenciaVoo(novoVoo: Voo) boolean
+        +getVoos() List~Voo~
+        +toString() String
+    }
+    class Voo
+    class Cliente
+    class Cidade
+    Bilhete "1" --> "1..*" Voo : voos
+    Bilhete "*" --> "1" Cliente : comprado por
+    Bilhete ..> Cidade : origem inicial / destino final
