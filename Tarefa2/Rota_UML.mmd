@@ -1,0 +1,30 @@
+classDiagram
+    direction LR
+    class Rota {
+        -Cidade origem
+        -Cidade destino
+        +Rota(origem: Cidade, destino: Cidade)
+        +getOrigem() Cidade
+        +getDestino() Cidade
+        +getCodigo() String
+        +liga(origem: Cidade, destino: Cidade) boolean
+        -gerarCodigo() String
+        +toString() String
+    }
+    class Cidade {
+        <<enumeration>>
+        BELO_HORIZONTE
+        FORTALEZA
+        RECIFE
+        JOAO_PESSOA
+        SAO_LUIS
+        NATAL
+        -String codigo
+        +getCodigo() String
+    }
+    class Voo
+    class Agencia
+    Rota "*" --> "1" Cidade : origem
+    Rota "*" --> "1" Cidade : destino
+    Voo "*" --> "1" Rota : rota
+    Agencia ..> Rota : busca combinações de voos
