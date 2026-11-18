@@ -1,0 +1,100 @@
+classDiagram
+    direction LR
+
+    class Cliente {
+        -String nome
+        -String sobrenome
+        -int numeroRegistro
+        -List~Bilhete~ bilhetes
+        +Cliente(nome: String, sobrenome: String, numeroRegistro: int)
+        +getNome() String
+        +comprarBilhete(bilhete: Bilhete) void
+        +calcularTotalGasto() double
+        +gerarRelatorio() String
+        +toString() String
+    }
+
+    class Bilhete {
+        -int proximoId$
+        -double PERC_MAIS_CARO = 0.60$
+        -double PERC_SEGUNDO_MAIS_CARO = 0.40$
+        -double PERC_ADICIONAIS = 0.10$
+        -String idBilhete
+        -List~Voo~ voos
+        -Cliente cliente
+        -LocalDate dataEmissao
+        +Bilhete(cliente: Cliente, primeiroVoo: Voo)
+        +adicionarVoo(voo: Voo) boolean
+        +calcularPrecoFinal() double
+        +getOrigemInicial() Cidade
+        +getDestinoFinal() Cidade
+        +getQuantidadeVoos() int
+        +getVoos() List~Voo~
+        +getCliente() Cliente
+        +getIdBilhete() String
+        +getDataEmissao() LocalDate
+        -validarSequenciaVoo(novoVoo: Voo) boolean
+        -origemCompativel(novoVoo: Voo) boolean
+        -dataCompativel(novoVoo: Voo) boolean
+        +toString() String
+    }
+
+    class Voo {
+        +int CAPACIDADE = 150$
+        -String PREFIXO = "XAV"$
+        -long MAX_DIAS_ENTRE_CONEXOES = 1$
+        -DateTimeFormatter FORMATO_DATA$
+        -Rota rota
+        -LocalDate data
+        -double precoBase
+        -int assentosOcupados
+        +Voo(rota: Rota, data: LocalDate, precoBase: double)
+        +getCodigo() String
+        +getRota() Rota
+        +getOrigem() Cidade
+        +getDestino() Cidade
+        +getData() LocalDate
+        +getPrecoBase() double
+        +getAssentosOcupados() int
+        +vagasDisponiveis() int
+        +temVaga() boolean
+        +ocuparAssento() void
+        +podeSerSeguidoPor(proximo: Voo) boolean
+        +mesmoVooEData(outro: Voo) boolean
+        +toString() String
+    }
+
+    class Rota {
+        -Cidade origem
+        -Cidade destino
+        +Rota(origem: Cidade, destino: Cidade)
+        +getOrigem() Cidade
+        +getDestino() Cidade
+        +getCodigo() String
+        +liga(origem: Cidade, destino: Cidade) boolean
+        +toString() String
+    }
+
+    class Cidade {
+        <<enumeration>>
+        BELO_HORIZONTE
+        FORTALEZA
+        RECIFE
+        JOAO_PESSOA
+        SAO_LUIS
+        NATAL
+        -String codigo
+        -String nome
+        -Cidade(codigo: String, nome: String)
+        +getCodigo() String
+        +getNome() String
+        +toString() String
+    }
+
+    Cliente "1" -- "*" Bilhete : compra
+    Bilhete "*" o-- "1..*" Voo : voos (em ordem)
+    Voo "*" --> "1" Rota : rota
+    Rota "0..*" --> "1" Cidade : origem
+    Rota "0..*" --> "1" Cidade : destino
+    Bilhete ..> Cidade : origem inicial / destino final
+    Voo ..> Cidade : origem / destino
