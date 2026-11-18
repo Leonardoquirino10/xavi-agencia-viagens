@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
+import java.util.List;
+import java.util.Map;
+import java.util.IdentityHashMap;
 
 public class Voo {
     public static final int CAPACIDADE = 150;
@@ -54,11 +57,13 @@ public class Voo {
     }
 
     public int getAssentosOcupados() {
-        return assentosOcupados;
+        synchronized (Voo.class) {
+            return assentosOcupados;
+        }
     }
 
     public int vagasDisponiveis() {
-        return CAPACIDADE - assentosOcupados;
+        return CAPACIDADE - getAssentosOcupados();
     }
 
     public boolean temVaga() {
@@ -66,10 +71,25 @@ public class Voo {
     }
 
     public void ocuparAssento() {
-        if (!temVaga()) {
-            throw new IllegalStateException("O voo está lotado.");
+        reservarAssentos(List.of(this));
+    }
+
+    // A compra reserva o itinerário inteiro. Se um trecho lotar, nenhum é ocupado.
+    // O mesmo bloqueio protege compras concorrentes que compartilham um voo.
+    static synchronized void reservarAssentos(List<Voo> trechos) {
+        Map<Voo, Integer> pedidos = new IdentityHashMap<>();
+        for (Voo voo : trechos) {
+            pedidos.merge(voo, 1, Integer::sum);
         }
-        assentosOcupados++;
+        for (Map.Entry<Voo, Integer> pedido : pedidos.entrySet()) {
+            Voo voo = pedido.getKey();
+            if (voo.vagasDisponiveis() < pedido.getValue()) {
+                throw new IllegalStateException("Assentos insuficientes no voo " + voo.getCodigo());
+            }
+        }
+        for (Map.Entry<Voo, Integer> pedido : pedidos.entrySet()) {
+            pedido.getKey().assentosOcupados += pedido.getValue();
+        }
     }
 
     public boolean podeSerSeguidoPor(Voo proximo) {
