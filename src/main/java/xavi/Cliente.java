@@ -46,7 +46,7 @@ public class Cliente {
     }
 
     // Ponto único de registro, inclusive para bilhetes montados pelo código anterior.
-    public synchronized void comprarBilhete(Bilhete bilhete) {
+    public void comprarBilhete(Bilhete bilhete) {
         if (bilhete == null) {
             throw new IllegalArgumentException("O bilhete é obrigatório.");
         }
@@ -61,7 +61,7 @@ public class Cliente {
         bilhetes.add(bilhete);
     }
 
-    public synchronized double calcularTotalGasto() {
+    public double calcularTotalGasto() {
         double total = 0;
         for (Bilhete bilhete : bilhetes) {
             total += bilhete.calcularPrecoFinal();
@@ -69,17 +69,16 @@ public class Cliente {
         return total;
     }
 
-    public synchronized String gerarRelatorio() {
-        StringBuilder relatorio = new StringBuilder();
-        relatorio.append("Cliente: ").append(nome).append(" ").append(sobrenome)
-                .append("\nRegistro: ").append(numeroRegistro)
-                .append("\nQuantidade de bilhetes: ").append(bilhetes.size()).append("\n");
+    public String gerarRelatorio() {
+        String relatorio = "Cliente: " + nome + " " + sobrenome
+                + "\nRegistro: " + numeroRegistro
+                + "\nQuantidade de bilhetes: " + bilhetes.size() + "\n";
         for (Bilhete bilhete : bilhetes) {
-            relatorio.append(bilhete).append("\n");
+            relatorio += bilhete + "\n";
         }
-        relatorio.append("Total gasto: R$ ").append(String.format(
-                Locale.forLanguageTag("pt-BR"), "%.2f", calcularTotalGasto()));
-        return relatorio.toString();
+        relatorio += "Total gasto: R$ " + String.format(
+                Locale.forLanguageTag("pt-BR"), "%.2f", calcularTotalGasto());
+        return relatorio;
     }
 
     @Override
