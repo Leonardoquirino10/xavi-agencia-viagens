@@ -76,7 +76,7 @@ public class Voo {
 
     // A compra reserva o itinerário inteiro. Se um trecho lotar, nenhum é ocupado.
     // O mesmo bloqueio protege compras concorrentes que compartilham um voo.
-    static synchronized void reservarAssentos(List<Voo> trechos) {
+    static void reservarAssentos(List<Voo> trechos) {
         Map<Voo, Integer> pedidos = new IdentityHashMap<>();
         for (Voo voo : trechos) {
             pedidos.merge(voo, 1, Integer::sum);
